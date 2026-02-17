@@ -1,0 +1,50 @@
+/*
+ * SPI3 configuration for AD5940 on nRF5340 DK
+ *
+ * Pins (adjust to your wiring):
+ *   SCK  -> P1.01
+ *   MOSI -> P1.02
+ *   MISO -> P1.03
+ */
+
+&pinctrl {
+	spi3_default: spi3_default {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 1)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 2)>,
+				<NRF_PSEL(SPIM_MISO, 1, 3)>;
+		};
+	};
+
+	spi3_sleep: spi3_sleep {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 1)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 2)>,
+				<NRF_PSEL(SPIM_MISO, 1, 3)>;
+			low-power-enable;
+		};
+	};
+};
+
+&spi3 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	pinctrl-0 = <&spi3_default>;
+	pinctrl-1 = <&spi3_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+/ {
+	ad5940_gpios {
+		compatible = "gpio-leds";
+		cs_pin: cs_pin {
+			gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
+		};
+		rst_pin: rst_pin {
+			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+		};
+		int_pin: int_pin {
+			gpios = <&gpio1 6 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		};
+	};
+};
