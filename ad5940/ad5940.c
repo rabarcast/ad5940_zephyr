@@ -12,7 +12,6 @@
  * Analog Devices Software License Agreement.
 **/
 #include "ad5940.h"
-#include "nrf_delay.h"
 
 /*! \mainpage AD5940 Library Introduction
  * 
@@ -675,7 +674,6 @@ static unsigned char AD5940_ReadWrite8B(unsigned char data)
    uint8_t tx[1], rx[1];
    tx[0] = data;
    AD5940_ReadWriteNBytes(tx,rx,1);
-   nrf_delay_us(2);
    return rx[0];
 }
 
@@ -684,7 +682,6 @@ static void AD5940_Write8B(unsigned char data)
    uint8_t tx[1];
    tx[0] = data;
    AD5940_ReadWriteNBytes(tx,NULL,1);
-   nrf_delay_us(2);
    return;
 }
 
@@ -693,7 +690,6 @@ static unsigned char AD5940_Read8B(unsigned char data)
    uint8_t rx[1];
    rx[0] = data;
    AD5940_ReadWriteNBytes(NULL,rx,1);
-   nrf_delay_us(2);
    return rx[0];
 }
 
@@ -709,7 +705,6 @@ static uint16_t AD5940_ReadWrite16B(uint16_t data)
    SendBuffer[0] = data>>8;
    SendBuffer[1] = data&0xff;
    AD5940_ReadWriteNBytes(SendBuffer,RecvBuffer,2);
-   nrf_delay_us(2);
    return (((uint16_t)RecvBuffer[0])<<8)|RecvBuffer[1];
 }
 
@@ -720,18 +715,16 @@ static void AD5940_Write16B(uint16_t data)
    SendBuffer[0] = data>>8;
    SendBuffer[1] = data&0xff;
    AD5940_ReadWriteNBytes(SendBuffer,NULL,2);
-   nrf_delay_us(2);
    return;
 }
 
 static uint16_t AD5940_Read16B(uint16_t data)
 {
    uint8_t SendBuffer[2];
-   uint8_t RecvBuffer[3];  /* Extra byte needed for SPI timing */
+   uint8_t RecvBuffer[3];  /* length=3 needed, see ReadWriteNBytes call below */
    SendBuffer[0] = data>>8;
    SendBuffer[1] = data&0xff;
    AD5940_ReadWriteNBytes(NULL,RecvBuffer,3);
-   nrf_delay_us(3);
    return (((uint16_t)RecvBuffer[0])<<8)|RecvBuffer[1];
 }
 
@@ -750,7 +743,6 @@ static uint32_t AD5940_ReadWrite32B(uint32_t data)
    SendBuffer[2] = (data>> 8)&0xff;
    SendBuffer[3] = (data    )&0xff;
    AD5940_ReadWriteNBytes(SendBuffer,RecvBuffer,4);
-   nrf_delay_us(4);
    return (((uint32_t)RecvBuffer[0])<<24)|(((uint32_t)RecvBuffer[1])<<16)|(((uint32_t)RecvBuffer[2])<<8)|RecvBuffer[3];
 }
 
@@ -758,27 +750,25 @@ static void AD5940_Write32B(uint32_t data)
 {
    uint8_t SendBuffer[4];
    uint8_t RecvBuffer[4];
-  
+
    SendBuffer[0] = (data>>24)&0xff;
    SendBuffer[1] = (data>>16)&0xff;
    SendBuffer[2] = (data>> 8)&0xff;
    SendBuffer[3] = (data    )&0xff;
    AD5940_ReadWriteNBytes(SendBuffer,NULL,4);
-   nrf_delay_us(4);
    return;
 }
 
 static uint32_t AD5940_Read32B(uint32_t data)
 {
    uint8_t SendBuffer[4];
-   uint8_t RecvBuffer[5];  /* Extra byte needed for SPI timing */
+   uint8_t RecvBuffer[5];  /* length=5 needed, see ReadWriteNBytes call below */
 
    SendBuffer[0] = (data>>24)&0xff;
    SendBuffer[1] = (data>>16)&0xff;
    SendBuffer[2] = (data>> 8)&0xff;
    SendBuffer[3] = (data    )&0xff;
    AD5940_ReadWriteNBytes(NULL,RecvBuffer,5);
-   nrf_delay_us(4);
    return (((uint32_t)RecvBuffer[0])<<24)|(((uint32_t)RecvBuffer[1])<<16)|(((uint32_t)RecvBuffer[2])<<8)|RecvBuffer[3];
 }
 
@@ -794,14 +784,9 @@ static void AD5940_SPIWriteReg(uint16_t RegAddr, uint32_t RegData)
   AD5940_CsClr();
   AD5940_Write8B(SPICMD_SETADDR);
   AD5940_Write16B(RegAddr);
-  //nrf_delay_us(2);
   AD5940_CsSet();
-  /* Add delay here to meet the SPI timing. */
-  //nrf_delay_us(10);
-  /* ATENCIÓN, FALTARÁ AHÍ UN DELAY_10US ??? */
   AD5940_CsClr();
   AD5940_Write8B(SPICMD_WRITEREG);
-  //nrf_delay_us(10);
   if(((RegAddr>=0x1000)&&(RegAddr<=0x3014)))
     AD5940_Write32B(RegData);
   else
@@ -3462,9 +3447,8 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
 
   AD5940_AFECtrlS(AFECTRL_WG|AFECTRL_ADCPWR, bTRUE);  /* Enable Waveform generator, ADC power */
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT, bTRUE);  /* Start ADC convert and DFT */
-  /* Wait for DFT to complete, then wake in case chip hibernated */
-  nrf_delay_ms(50);
-  AD5940_WakeUp(100);
+  /* Wait until DFT ready */
+  while(AD5940_INTCTestFlag(AFEINTC_1, AFEINTSRC_DFTRDY) == bFALSE);
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT|AFECTRL_WG|AFECTRL_ADCPWR, bFALSE);  /* Stop ADC convert and DFT */
   AD5940_INTCClrFlag(AFEINTSRC_DFTRDY);
 
@@ -3474,9 +3458,8 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
   AD5940_ADCMuxCfgS(ADCMUXP_HSTIA_P, ADCMUXN_HSTIA_N);
   AD5940_AFECtrlS(AFECTRL_WG|AFECTRL_ADCPWR, bTRUE);  /* Enable Waveform generator, ADC power */
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT, bTRUE);  /* Start ADC convert and DFT */
-  /* Wait for DFT to complete, then wake in case chip hibernated */
-  nrf_delay_ms(50);
-  AD5940_WakeUp(100);
+  /* Wait until DFT ready */
+  while(AD5940_INTCTestFlag(AFEINTC_1, AFEINTSRC_DFTRDY) == bFALSE);
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT|AFECTRL_WG|AFECTRL_ADCPWR, bFALSE);  /* Stop ADC convert and DFT */
   AD5940_INTCClrFlag(AFEINTSRC_DFTRDY);
 

@@ -439,8 +439,8 @@ AD5940Err AppBIAInit(uint32_t *pBuffer, uint32_t BufferSize)
   {
     AppBIARtiaCal();
     AppBIACfg.ReDoRtiaCal = bFALSE;
-    /* HSRtiaCal's read-modify-write on INTCSEL1 can corrupt other enables
-       (ENDSEQ, DATAFIFOTHRESH) if SPI read returns garbage. Restore them. */
+    /* Defensive: restore INTC config in case calibration's read-modify-write
+       was affected by a SPI glitch. Cost: 2 SPI writes, no delay. */
     AD5940_INTCCfg(AFEINTC_1, AFEINTSRC_ALLINT, bTRUE);
     AD5940_INTCCfg(AFEINTC_0, AFEINTSRC_DATAFIFOTHRESH, bTRUE);
   }
@@ -591,7 +591,7 @@ AD5940Err AppBIAISR(void *pBuff, uint32_t *pCount)
   BuffCount = *pCount;
   if(AppBIACfg.BIAInited == bFALSE)
     return AD5940ERR_APPERROR;
-  if(AD5940_WakeUp(100) > 100)  /* Wakeup AFE by read register, try up to 100 times */
+  if(AD5940_WakeUp(10) > 10)  /* Wakeup AFE by read register, read register 10 times at most */
     return AD5940ERR_WAKEUP;  /* Wakeup Failed */
   AD5940_SleepKeyCtrlS(SLPKEY_LOCK);  /* Don't enter hibernate while reading FIFO */
   *pCount = 0;

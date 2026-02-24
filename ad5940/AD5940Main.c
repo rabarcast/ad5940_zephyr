@@ -91,23 +91,8 @@ void AD5940PlatformCfg(void)
 
   /* Use hardware reset */
   AD5940_HWReset();
-  /* AD5940 needs time after reset before SPI is ready.
-     Retry Initialize until CHIPID reads correctly. */
-  {
-    int retries;
-    uint32_t chipid;
-    for (retries = 0; retries < 5; retries++) {
-      AD5940_Delay10us(2000);  /* 20ms between attempts */
-      AD5940_WakeUp(10);
-      AD5940_Initialize();
-      chipid = AD5940_ReadReg(REG_AFECON_CHIPID);
-      if (chipid == 0x5502 || chipid == 0x5501 || chipid == 0x5500) {
-        break;
-      }
-      printf("CHIPID retry %d: got 0x%04x, resetting...\n", retries + 1, (unsigned)chipid);
-      AD5940_HWReset();
-    }
-  }
+  AD5940_Delay10us(2000);  /* 20ms after reset */
+  AD5940_Initialize();
   /* Step1. Configure clock */
   clk_cfg.ADCClkDiv = ADCCLKDIV_1;
   clk_cfg.ADCCLkSrc = ADCCLKSRC_HFOSC;
@@ -180,22 +165,13 @@ void AD5940_Main(void)
   BIAend = 0;
 
   AD5940PlatformCfg();
-  printf("[OK] PlatformCfg done. CHIPID=0x%04x\n", (unsigned)AD5940_ReadReg(REG_AFECON_CHIPID));
-
   AD5940BIAStructInit();
-
   AppBIAInit(AppBuff, APPBUFF_SIZE);
-  printf("[OK] AppBIAInit done. GP0=%d\n", AD5940_ReadGP0Pin());
-
   AppBIACtrl(BIACTRL_START, 0);
-
   AD5940_ClrMCUIntFlag();
-  printf("Measurement started, waiting for data...\n");
 
   while (!BIAend) {
-    /* Check interrupt flag OR poll GP0 pin directly as backup.
-       With GPIO_ACTIVE_LOW: logical 1 = physically LOW = interrupt asserted */
-    if (AD5940_GetMCUIntFlag() || AD5940_ReadGP0Pin() == 1) {
+    if (AD5940_GetMCUIntFlag()) {
       AD5940_ClrMCUIntFlag();
       temp = APPBUFF_SIZE;
       AppBIAISR(AppBuff, &temp);
