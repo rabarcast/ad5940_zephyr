@@ -399,10 +399,7 @@ static AD5940Err AppBIARtiaCal(void)
     for(i=0;i<AppBIACfg.SweepCfg.SweepPoints;i++)
     {
 			AD5940_HSRtiaCal(&hsrtia_cal, AppBIACfg.RtiaCalTable[i]);
-#ifdef ADI_DEBUG
-      //ADI_Print("Freq:%.2f, RTIA: Mag:%f Ohm, Phase:%.3f\n", hsrtia_cal.fFreq, AppBIACfg.RtiaCalTable[i][0], AppBIACfg.RtiaCalTable[i][1]);
-#endif
-      AD5940_SweepNext(&AppBIACfg.SweepCfg, &hsrtia_cal.fFreq);     
+      AD5940_SweepNext(&AppBIACfg.SweepCfg, &hsrtia_cal.fFreq);
     }
     AppBIACfg.SweepCfg.SweepIndex = 0;  /* Reset index */
     AppBIACfg.RtiaCurrValue[0] = AppBIACfg.RtiaCalTable[AppBIACfg.SweepCfg.SweepIndex][0];
@@ -437,12 +434,15 @@ AD5940Err AppBIAInit(uint32_t *pBuffer, uint32_t BufferSize)
   AD5940_SEQCfg(&seq_cfg);
 
   /* Do RTIA calibration */
-  
   if((AppBIACfg.ReDoRtiaCal == bTRUE) || \
       AppBIACfg.BIAInited == bFALSE)  /* Do calibration on the first initializaion */
   {
     AppBIARtiaCal();
     AppBIACfg.ReDoRtiaCal = bFALSE;
+    /* HSRtiaCal's read-modify-write on INTCSEL1 can corrupt other enables
+       (ENDSEQ, DATAFIFOTHRESH) if SPI read returns garbage. Restore them. */
+    AD5940_INTCCfg(AFEINTC_1, AFEINTSRC_ALLINT, bTRUE);
+    AD5940_INTCCfg(AFEINTC_0, AFEINTSRC_DATAFIFOTHRESH, bTRUE);
   }
   /* Reconfigure FIFO */
   AD5940_FIFOCtrlS(FIFOSRC_DFT, bFALSE);									/* Disable FIFO firstly */
@@ -591,16 +591,16 @@ AD5940Err AppBIAISR(void *pBuff, uint32_t *pCount)
   BuffCount = *pCount;
   if(AppBIACfg.BIAInited == bFALSE)
     return AD5940ERR_APPERROR;
-  if(AD5940_WakeUp(10) > 10)  /* Wakeup AFE by read register, read 10 times at most */
+  if(AD5940_WakeUp(100) > 100)  /* Wakeup AFE by read register, try up to 100 times */
     return AD5940ERR_WAKEUP;  /* Wakeup Failed */
-  AD5940_SleepKeyCtrlS(SLPKEY_LOCK);  /* Don't enter hibernate */
+  AD5940_SleepKeyCtrlS(SLPKEY_LOCK);  /* Don't enter hibernate while reading FIFO */
   *pCount = 0;
 
   if(AD5940_INTCTestFlag(AFEINTC_0, AFEINTSRC_DATAFIFOTHRESH) == bTRUE)
   {
     /* Now there should be 4 data in FIFO */
     FifoCnt = (AD5940_FIFOGetCnt()/4)*4;
-    
+
     if(FifoCnt > BuffCount)
     {
       ///@todo buffer is limited.
@@ -608,14 +608,16 @@ AD5940Err AppBIAISR(void *pBuff, uint32_t *pCount)
     AD5940_FIFORd((uint32_t *)pBuff, FifoCnt);
     AD5940_INTCClrFlag(AFEINTSRC_DATAFIFOTHRESH);
     AppBIARegModify(pBuff, &FifoCnt);   /* If there is need to do AFE re-configure, do it here when AFE is in active state */
-    //AD5940_EnterSleepS();  /* Manually put AFE back to hibernate mode. */
-    AD5940_SleepKeyCtrlS(SLPKEY_UNLOCK);  /* Allow AFE to enter hibernate mode */
-    /* Process data */ 
-    AppBIADataProcess((int32_t*)pBuff,&FifoCnt); 
+    AD5940_SleepKeyCtrlS(SLPKEY_UNLOCK);
+    AD5940_EnterSleepS();
+    /* Process data */
+    AppBIADataProcess((int32_t*)pBuff,&FifoCnt);
     *pCount = FifoCnt;
     return 0;
   }
-  
+
+  AD5940_SleepKeyCtrlS(SLPKEY_UNLOCK);
+  AD5940_EnterSleepS();
   return 0;
 } 
 

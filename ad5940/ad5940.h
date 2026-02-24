@@ -4915,6 +4915,7 @@ void      AD5940_ReadWriteNBytes(unsigned char *pSendBuffer,unsigned char *pRecv
 uint32_t  AD5940_GetMCUIntFlag(void);
 uint32_t  AD5940_ClrMCUIntFlag(void);
 uint32_t  AD5940_MCUResourceInit(void);
+int       AD5940_ReadGP0Pin(void);
 void      AD5940_MCUResourceDeInit(void);
 void      AD5940PlatformCfg(void);
 

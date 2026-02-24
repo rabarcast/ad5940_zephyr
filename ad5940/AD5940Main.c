@@ -23,8 +23,6 @@ Analog Devices Software License Agreement.
 
 #include "ad5940.h"
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include <zephyr/kernel.h>
 #include "BodyImpedance.h"
 #include "AD5940Main.h"
@@ -34,7 +32,7 @@ uint32_t AppBuff[APPBUFF_SIZE];
 extern uint8_t BIAend;
 
 /* Config parameters AD5940 */
-float cfgRcalVal = 30;
+float cfgRcalVal = 10000;
 int32_t cfgNumOfData = DEFAULT_NUM_REPETITIONS * DEFAULT_SWEEP_POINTS;
 bool cfgSweepEn = true;
 float cfgSweepStart = 4000;
@@ -93,8 +91,23 @@ void AD5940PlatformCfg(void)
 
   /* Use hardware reset */
   AD5940_HWReset();
-  /* Platform configuration */
-  AD5940_Initialize();
+  /* AD5940 needs time after reset before SPI is ready.
+     Retry Initialize until CHIPID reads correctly. */
+  {
+    int retries;
+    uint32_t chipid;
+    for (retries = 0; retries < 5; retries++) {
+      AD5940_Delay10us(2000);  /* 20ms between attempts */
+      AD5940_WakeUp(10);
+      AD5940_Initialize();
+      chipid = AD5940_ReadReg(REG_AFECON_CHIPID);
+      if (chipid == 0x5502 || chipid == 0x5501 || chipid == 0x5500) {
+        break;
+      }
+      printf("CHIPID retry %d: got 0x%04x, resetting...\n", retries + 1, (unsigned)chipid);
+      AD5940_HWReset();
+    }
+  }
   /* Step1. Configure clock */
   clk_cfg.ADCClkDiv = ADCCLKDIV_1;
   clk_cfg.ADCCLkSrc = ADCCLKSRC_HFOSC;
@@ -127,7 +140,6 @@ void AD5940PlatformCfg(void)
   gpio_cfg.PullEnSet = 0;
 
   AD5940_AGPIOCfg(&gpio_cfg);
-  AD5940_SleepKeyCtrlS(SLPKEY_UNLOCK);
 }
 
 /* !!Change the application parameters here if you want to change it to none-default value */
@@ -163,39 +175,35 @@ void AD5940BIAStructInit(void)
 
 void AD5940_Main(void)
 {
-  static uint32_t IntCount;
-  static uint32_t count;
   uint32_t temp;
 
-  /* Reset static variables for each new measurement */
-  IntCount = 0;
-  count = 0;
   BIAend = 0;
 
   AD5940PlatformCfg();
+  printf("[OK] PlatformCfg done. CHIPID=0x%04x\n", (unsigned)AD5940_ReadReg(REG_AFECON_CHIPID));
 
-  DEBUG_PRINT("\n=== STARTING AD5940 MEASUREMENT ===\n");
   AD5940BIAStructInit();
+
   AppBIAInit(AppBuff, APPBUFF_SIZE);
+  printf("[OK] AppBIAInit done. GP0=%d\n", AD5940_ReadGP0Pin());
+
   AppBIACtrl(BIACTRL_START, 0);
-  DEBUG_PRINT("AD5940 measurement started - waiting for data...\n");
+
+  AD5940_ClrMCUIntFlag();
+  printf("Measurement started, waiting for data...\n");
 
   while (!BIAend) {
-    if (AD5940_GetMCUIntFlag()) {
-      IntCount++;
+    /* Check interrupt flag OR poll GP0 pin directly as backup.
+       With GPIO_ACTIVE_LOW: logical 1 = physically LOW = interrupt asserted */
+    if (AD5940_GetMCUIntFlag() || AD5940_ReadGP0Pin() == 1) {
       AD5940_ClrMCUIntFlag();
       temp = APPBUFF_SIZE;
       AppBIAISR(AppBuff, &temp);
-      BIAShowResult(AppBuff, temp);
-
-      if (IntCount == 240) {
-        IntCount = 0;
+      if (temp > 0) {
+        BIAShowResult(AppBuff, temp);
       }
     }
-    count++;
-    if (count > 1000000) {
-      count = 0;
-    }
+    k_usleep(100);
   }
   BIAend = 0;
   DEBUG_PRINT("\n=== AD5940 MEASUREMENT COMPLETE ===\n");

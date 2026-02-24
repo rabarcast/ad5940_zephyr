@@ -727,10 +727,10 @@ static void AD5940_Write16B(uint16_t data)
 static uint16_t AD5940_Read16B(uint16_t data)
 {
    uint8_t SendBuffer[2];
-   uint8_t RecvBuffer[2];
+   uint8_t RecvBuffer[3];  /* Extra byte needed for SPI timing */
    SendBuffer[0] = data>>8;
    SendBuffer[1] = data&0xff;
-   AD5940_ReadWriteNBytes(NULL,RecvBuffer,3); //Para que funcione hay que poner un 3 en length (?). Con 2 no funciona
+   AD5940_ReadWriteNBytes(NULL,RecvBuffer,3);
    nrf_delay_us(3);
    return (((uint16_t)RecvBuffer[0])<<8)|RecvBuffer[1];
 }
@@ -771,8 +771,8 @@ static void AD5940_Write32B(uint32_t data)
 static uint32_t AD5940_Read32B(uint32_t data)
 {
    uint8_t SendBuffer[4];
-   uint8_t RecvBuffer[4];
-  
+   uint8_t RecvBuffer[5];  /* Extra byte needed for SPI timing */
+
    SendBuffer[0] = (data>>24)&0xff;
    SendBuffer[1] = (data>>16)&0xff;
    SendBuffer[2] = (data>> 8)&0xff;
@@ -3395,8 +3395,10 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
   /*INTC configuration */
   INTCCfg = AD5940_INTCGetCfg(AFEINTC_1);
   AD5940_INTCCfg(AFEINTC_1, AFEINTSRC_DFTRDY, bTRUE); /* Enable SINC2 Interrupt in INTC1 */
-  
+
+
   AD5940_AFECtrlS(AFECTRL_ALL, bFALSE);  /* Init all to disable state */
+
   /* Configure reference system */
   aferef_cfg.HpBandgapEn = bTRUE;
   aferef_cfg.Hp1V1BuffEn = bTRUE;
@@ -3410,7 +3412,8 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
   aferef_cfg.LpBandgapEn = bFALSE;
   aferef_cfg.LpRefBufEn = bFALSE;
   aferef_cfg.LpRefBoostEn = bFALSE;
-  AD5940_REFCfgS(&aferef_cfg);	
+  AD5940_REFCfgS(&aferef_cfg);
+
   /* Configure HP Loop */
   hs_loop.HsDacCfg.ExcitBufGain = ExcitBuffGain;
   hs_loop.HsDacCfg.HsDacGain = HsDacGain;
@@ -3428,6 +3431,7 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
   hs_loop.WgCfg.SinCfg.SinOffsetWord = 0;
   hs_loop.WgCfg.SinCfg.SinPhaseWord = 0;
   AD5940_HSLoopCfgS(&hs_loop);
+
   /* Configure DSP */
   dsp_cfg.ADCBaseCfg.ADCMuxN = ADCMUXN_N_NODE;
   dsp_cfg.ADCBaseCfg.ADCMuxP = ADCMUXP_P_NODE;
@@ -3449,28 +3453,30 @@ AD5940Err AD5940_HSRtiaCal(HSRTIACal_Type *pCalCfg, void *pResult)
   memset(&dsp_cfg.StatCfg, 0, sizeof(dsp_cfg.StatCfg));
   AD5940_DSPCfgS(&dsp_cfg);
 
+
   /* Enable all of them. They are automatically turned off during hibernate mode to save power */
   AD5940_AFECtrlS(AFECTRL_HSTIAPWR|AFECTRL_INAMPPWR|AFECTRL_EXTBUFPWR|\
                 /*AFECTRL_WG|*/AFECTRL_DACREFPWR|AFECTRL_HSDACPWR|\
                 AFECTRL_SINC2NOTCH, bTRUE);
-  
+
+
   AD5940_AFECtrlS(AFECTRL_WG|AFECTRL_ADCPWR, bTRUE);  /* Enable Waveform generator, ADC power */
-  //wait for sometime.
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT, bTRUE);  /* Start ADC convert and DFT */
-  /* Wait until DFT ready */
-  while(AD5940_INTCTestFlag(AFEINTC_1, AFEINTSRC_DFTRDY) == bFALSE);  
+  /* Wait for DFT to complete, then wake in case chip hibernated */
+  nrf_delay_ms(50);
+  AD5940_WakeUp(100);
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT|AFECTRL_WG|AFECTRL_ADCPWR, bFALSE);  /* Stop ADC convert and DFT */
   AD5940_INTCClrFlag(AFEINTSRC_DFTRDY);
-  
+
   DftRcal.Real = AD5940_ReadAfeResult(AFERESULT_DFTREAL);
   DftRcal.Image = AD5940_ReadAfeResult(AFERESULT_DFTIMAGE);
 
   AD5940_ADCMuxCfgS(ADCMUXP_HSTIA_P, ADCMUXN_HSTIA_N);
   AD5940_AFECtrlS(AFECTRL_WG|AFECTRL_ADCPWR, bTRUE);  /* Enable Waveform generator, ADC power */
-  //wait for sometime.
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT, bTRUE);  /* Start ADC convert and DFT */
-  /* Wait until DFT ready */
-  while(AD5940_INTCTestFlag(AFEINTC_1, AFEINTSRC_DFTRDY) == bFALSE);  
+  /* Wait for DFT to complete, then wake in case chip hibernated */
+  nrf_delay_ms(50);
+  AD5940_WakeUp(100);
   AD5940_AFECtrlS(AFECTRL_ADCCNV|AFECTRL_DFT|AFECTRL_WG|AFECTRL_ADCPWR, bFALSE);  /* Stop ADC convert and DFT */
   AD5940_INTCClrFlag(AFEINTSRC_DFTRDY);
 
