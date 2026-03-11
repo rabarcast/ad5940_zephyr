@@ -1,15 +1,15 @@
-# [Nombre del Proyecto]
 
-[Descripción breve del proyecto en 2-3 oraciones. Qué hace, qué hardware usa, qué problema resuelve.]
+
+Sistema de detección de caidas y monitorización de datos en tiempo real y uso de cifrado. Ademas de trazabilidad de datos sensados.
 
 ## Equipo
 
 | Nombre          | Rol                  | GitHub          |
 |-----------------|----------------------|-----------------|
-| [Nombre]        | [Rol]                | @usuario        |
-| [Nombre]        | [Rol]                | @usuario        |
-| [Nombre]        | [Rol]                | @usuario        |
-| [Nombre]        | [Rol]                | @usuario        |
+| [Iván Jimenez Contrera]        | [trazabilidad]                | @ivaanjc        |
+| [Paula Pardo Suarez]        | [base de datos]                | @Darsyh         |
+| [Alejandro Rodriguez Rodriguez]        | [configuración del sensor y lectura de datos]                | @alerodrod8       |
+| [Rafael Barroso Castallo]        | [cifrado de datos]                | @rabarcast        |
 
 ## Requisitos previos
 
