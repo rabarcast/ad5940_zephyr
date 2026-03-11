@@ -3,14 +3,14 @@
 cmake_minimum_required(VERSION 3.20.0)
 set(DTC_OVERLAY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/boards/nrf5340dk_nrf5340_cpuapp_ns.overlay")
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(spi_test)
+project(ad5940_bia)
 
 target_sources(app PRIVATE
     src/main.c
-    ad5940/ad5940.c
-    ad5940/BodyImpedance.c
-    ad5940/AD5940Main.c
-    ad5940/ZephyrPort.c
+    src/ad5940/ad5940.c
+    src/ad5940/BodyImpedance.c
+    src/ad5940/AD5940Main.c
+    src/ad5940/ZephyrPort.c
 )
 
-target_include_directories(app PRIVATE ad5940)
+target_include_directories(app PRIVATE src/ad5940)
