@@ -1,14 +1,14 @@
 
 
-Sistema de detección de caidas y monitorización de datos en tiempo real y uso de cifrado. Ademas de trazabilidad de datos sensados.
+Sistema de detección de caidas y monitorización de datos en tiempo real y uso de cifrado. Además de trazabilidad de datos y notificación de emergencia en caso de caída.
 
 ## Equipo
 
 | Nombre          | Rol                  | GitHub          |
 |-----------------|----------------------|-----------------|
-| [Iván Jimenez Contrera]        | [trazabilidad]                | @ivaanjc        |
-| [Paula Pardo Suarez]        | [base de datos]                | @Darsyh         |
-| [Alejandro Rodriguez Rodriguez]        | [configuración del sensor y lectura de datos]                | @alerodrod8       |
+| [Iván Jimenez Contrera]        | [Trazabilidad y BBDD]                | @ivaanjc        |
+| [Paula Pardo Suarez]        | [Aplicación móvil]                | @Darsyh         |
+| [Alejandro Rodriguez Rodriguez]        | [configuración del sensor y lectura de los datos]                | @alerodrod8       |
 | [Rafael Barroso Castallo]        | [cifrado de datos]                | @rabarcast        |
 
 ## Requisitos previos
