@@ -1,8 +1,6 @@
 # LLM Context Files
 
-These files are reference material from the Nordic DevAcademy course.
-They are NOT project documentation — they exist so that AI assistants
-(Claude, Copilot, etc.) have context about Zephyr RTOS and nRF Connect SDK
-when helping with development.
+Place reference documentation here for AI assistants (Claude, Copilot, etc.).
+For example, Nordic DevAcademy course materials, sensor datasheets, or API docs.
 
-These files should not be modified as part of normal project work.
+These files are NOT project documentation and should not be modified during development.

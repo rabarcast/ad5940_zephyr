@@ -1,108 +1,69 @@
-# AD5940 Body Impedance Analysis (BIA) on nRF5340 DK
 
-This project demonstrates how to interface the Analog Devices AD5940 high-precision impedance analyzer with a Nordic nRF5340 DK using Zephyr RTOS over SPI. It performs Body Impedance Analysis (BIA) measurements and outputs results over UART.
 
-Built as a reference example for university embedded-systems courses.
+Sistema de detección de caidas y monitorización de datos en tiempo real y uso de cifrado. Además de trazabilidad de datos y notificación de emergencia en caso de caída.
 
-## Hardware Setup
+## Equipo
 
-```
-    nRF5340 DK (Arduino Header)              AD5940 Eval Board
-   ┌──────────────────────────┐             ┌─────────────────┐
-   │                          │             │                 │
-   │  D13 (P1.15) SCK  ──────┼─────────────┼── SCK           │
-   │  D11 (P1.13) MOSI ──────┼─────────────┼── MOSI          │
-   │  D12 (P1.14) MISO ──────┼─────────────┼── MISO          │
-   │  D10 (P1.12) CS   ──────┼─────────────┼── CS            │
-   │  D2  (P1.04) INT  ──────┼─────────────┼── GP0 (INT)     │
-   │       P0.07  RST  ──────┼─────────────┼── RESET         │
-   │                          │             │                 │
-   │  GND ────────────────────┼─────────────┼── GND           │
-   │  VDD (3.3V) ────────────┼─────────────┼── VDD           │
-   │                          │             │                 │
-   └──────────────────────────┘             └─────────────────┘
-```
+| Nombre          | Rol                  | GitHub          |
+|-----------------|----------------------|-----------------|
+| [Iván Jimenez Contrera]        | [Trazabilidad y BBDD]                | @ivaanjc        |
+| [Paula Pardo Suarez]        | [Aplicación móvil]                | @Darsyh         |
+| [Alejandro Rodriguez Rodriguez]        | [configuración del sensor y lectura de los datos]                | @alerodrod8       |
+| [Rafael Barroso Castallo]        | [cifrado de datos]                | @rabarcast        |
 
-### Pin Connections
+## Requisitos previos
 
-| Function | nRF5340 Pin | Arduino Header | AD5940 Pin | Notes               |
-|----------|-------------|----------------|------------|----------------------|
-| SCK      | P1.15       | D13            | SCK        | SPI clock            |
-| MOSI     | P1.13       | D11            | MOSI       | SPI data out         |
-| MISO     | P1.14       | D12            | MISO       | SPI data in          |
-| CS       | P1.12       | D10            | CS         | Manual GPIO, active low |
-| INT      | P1.04       | D2             | GP0        | Interrupt, active low, pull-up |
-| RST      | P0.07       | --             | RESET      | Active low           |
-| GND      | GND         | GND            | GND        | Common ground        |
-| VDD      | 3.3 V       | 3V3            | VDD        | Power supply         |
+- **nRF Connect SDK** v2.x instalado ([guía de instalación](https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation.html))
+- **VS Code** con la extensión **nRF Connect for VS Code**
+- **nRF5340 DK** (placa de desarrollo)
+- Cable USB para conexión y alimentación de la placa
 
-SPI uses the SPIM2 peripheral (not SPIM4). Chip select is driven manually via GPIO rather than through the SPI controller.
+## Compilar y flashear
 
-## Prerequisites
+1. Abrir el proyecto en VS Code con la extensión nRF Connect.
 
-- **nRF Connect SDK** (v2.5.0 or later) with Zephyr RTOS
-- **west** meta-tool (installed as part of the nRF Connect SDK)
-- **nRF5340 DK** development board
-- **AD5940** or **ADuCM355** evaluation board
-- A USB cable for programming and UART console output
-
-## Build and Flash
-
-1. Set up the nRF Connect SDK environment (see [Nordic's installation guide](https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation.html)).
-
-2. Build the project:
-
+2. Compilar desde la terminal:
    ```bash
    west build -b nrf5340dk/nrf5340/cpuapp
    ```
 
-3. Flash the firmware:
-
+3. Flashear al dispositivo:
    ```bash
    west flash
    ```
 
-4. Open a serial terminal (115200 baud) to see measurement output:
-
+4. Ver logs del serial:
    ```bash
-   # Example using minicom
+   # Opción 1: nRF Connect Serial Terminal en VS Code
+   # Opción 2: desde la terminal
    minicom -D /dev/ttyACM0 -b 115200
    ```
 
-To build for the non-secure target (with TF-M), use the `nrf5340dk/nrf5340/cpuapp/ns` board target instead. The corresponding device tree overlay is selected automatically via `CMakeLists.txt`.
-
-## Repository Structure
+## Estructura del repositorio
 
 ```
-├── CMakeLists.txt              Build configuration
-├── prj.conf                    Kconfig options (SPI, GPIO, logging, FPU)
-├── boards/                     Device tree overlays for nRF5340 DK
-├── src/
-│   ├── main.c                  Entry point: initializes AD5940 and runs BIA loop
-│   └── ad5940/
-│       ├── ZephyrPort.c        Platform port: SPI, GPIO, delay, interrupt
-│       ├── AD5940Main.c        Application-level init and measurement sequencing
-│       ├── BodyImpedance.c     BIA algorithm configuration and result processing
-│       ├── ad5940.c / ad5940.h Vendor library (Analog Devices)
-│       └── ...                 Additional vendor headers
-├── docs/                       Project documentation
-│   ├── PRD.md                  Product requirements document
-│   ├── architecture.md         System architecture and data flow
-│   └── porting-guide.md        Guide for porting AD5940 to new platforms
-├── project-template/           Starter template for student assignments
-└── llm-context/                Nordic course material (reference for AI tools)
+├── src/              ← Código fuente
+├── boards/           ← Devicetree overlays (.overlay)
+├── docs/
+│   ├── PRD.md        ← Requisitos del proyecto
+│   ├── architecture.md ← Diseño del sistema
+│   ├── designs/      ← Design docs por bloque
+│   ├── verification/ ← Evidencia de pruebas
+│   └── WORKFLOW.md   ← Flujo de trabajo del equipo
+├── llm-context/      ← Documentación de referencia para IA
+├── scripts/          ← Scripts de utilidad
+├── prj.conf          ← Configuración Kconfig
+├── CMakeLists.txt    ← Build system
+└── .github/          ← Templates de PR e issues
 ```
 
-For detailed design documentation, see:
+## Documentación
 
-- [docs/porting-guide.md](docs/porting-guide.md) -- How to port the AD5940 library to a new Zephyr-based platform.
-- [docs/PRD.md](docs/PRD.md) -- Product requirements and project scope.
-- [docs/architecture.md](docs/architecture.md) -- System architecture, component interactions, and data flow.
+- [PRD - Requisitos del proyecto](docs/PRD.md)
+- [Arquitectura del sistema](docs/architecture.md)
+- [Flujo de trabajo](docs/WORKFLOW.md)
 
-## Student Template
+## Flujo de trabajo
 
-The `project-template/` directory contains a stripped-down version of this project intended as a starting point for course assignments. It includes the build scaffolding and vendor library but leaves the port layer and application logic for students to implement.
-
-## License
-
-See individual source files for license information. The AD5940 library files are provided by Analog Devices.
+Este proyecto sigue el flujo de trabajo descrito en [docs/WORKFLOW.md](docs/WORKFLOW.md).
+Cada bloque de funcionalidad pasa por: **Design Doc** -> **Implementación** -> **Verificación** -> **Pull Request**.

@@ -1,0 +1,13 @@
+&i2c1 {
+    status = "okay";
+
+    bno055: bno055@28 {
+        compatible = "bosch,bno055";
+        reg = <0x28>;
+    };
+};
+
+&i2c1 {
+    sda-pin = <2>;
+    scl-pin = <3>;
+};
