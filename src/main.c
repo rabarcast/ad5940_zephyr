@@ -3,68 +3,61 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/sys/printk.h>
 
-#define I2C_NODE DT_NODELABEL(i2c1)
-#define BNO055_ADDR 0x28
+#include "BNO055.h"
 
-//Registers
-#define BNO055_CHIP_ID 0x00
-#define BNO055_ACCEL_DATA 0x08
+#define I2C_NODE DT_NODELABEL(bno055)
+
+static struct bno055_dev bno = {
+    .i2c = I2C_DT_SPEC_GET(I2C_NODE),
+};
 
 int main(void)
 {
-    const struct device *i2c = DEVICE_DT_GET(I2C_NODE);
+    printk("=== FALLING DETECTION PROJECT (BNO055) ===\n");
 
-    if (!device_is_ready(i2c)) {
-        printk("I2C not ready\n");
+    // Verificar I2C
+    if (!device_is_ready(bno.i2c.bus)) {
+        printk("Error: I2C no listo\n");
         return 0;
     }
 
-    printk("Reading I2C...\n");
+    printk("I2C OK\n");
 
-    uint8_t chip_id;
-    if (i2c_write_read(i2c, BNO055_ADDR, (uint8_t[]){BNO055_CHIP_ID}, 1, &chip_id, 1)!= 0){
-        printk("ERROR while reading chip ID\n");
+    // Inicializar sensor
+    if (bno055_init(&bno) != 0) {
+        printk("Error inicializando BNO055\n");
         return 0;
     }
 
-    printk("Chip ID: 0x%02X\n", chip_id);
+    printk("BNO055 listo\n");
 
-    if (chip_id != 0xA0) {
-        printk("BNO055 no detectado correctamente\n");
-        return 0;
-    }
-
-    // Cambiar a modo CONFIG (por seguridad)
-    uint8_t config_mode[2] = {0x3D, 0x00};
-    i2c_write(i2c, config_mode, 2, BNO055_ADDR);
-    k_sleep(K_MSEC(20));
-
-    // Cambiar a modo NDOF
-    uint8_t ndof_mode[2] = {0x3D, 0x0C};
-    i2c_write(i2c, ndof_mode, 2, BNO055_ADDR);
-    k_sleep(K_MSEC(20));
-
-    printk("NDOF Mode Activated\n");
-
+    float ax = 0, ay = 0, az = 0;
+    float gx = 0, gy = 0, gz = 0;
+    float qw = 0, qx = 0, qy = 0, qz = 0;
     while (1) {
-        uint8_t data[6];
-        uint8_t cont = 0;
 
-        // Read Accel X,Y,Z
-        if (i2c_write_read(i2c, BNO055_ADDR,
-                           (uint8_t[]){BNO055_ACCEL_DATA}, 1,
-                           data, 6) == 0) {
-
-            int16_t x = (data[1] << 8) | data[0];
-            int16_t y = (data[3] << 8) | data[2];
-            int16_t z = (data[5] << 8) | data[4];
-
-            printk("%d: ACCEL X:%d Y:%d Z:%d\n",cont, x, y, z);
-            cont++;
-        } else {
-            printk("Read Error\n");
+        // Leer datos
+        if (bno055_read_accel(&bno, &ax, &ay, &az) != 0) {
+            printk("Error leyendo ACC\n");
         }
 
-        k_sleep(K_MSEC(500));
+        if (bno055_read_gyro(&bno, &gx, &gy, &gz) != 0) {
+            printk("Error leyendo GYRO\n");
+        }
+
+        if (bno055_read_quat(&bno, &qw, &qx, &qy, &qz) != 0) {
+            printk("Error leyendo QUAT\n");
+        }
+
+        // Imprimir datos
+        printk("ACC [m/s2]  X:%6.2f Y:%6.2f Z:%6.2f\n", (double)ax, (double)ay, (double)az);
+        printk("GYR [dps]   X:%6.2f Y:%6.2f Z:%6.2f\n", (double)gx, (double)gy, (double)gz);
+        printk("QUAT        W:%6.3f X:%6.3f Y:%6.3f Z:%6.3f\n",
+               (double)qw, (double)qx, (double)qy, (double)qz);
+
+        printk("-----------------------------\n");
+
+        // Frecuencia de lectura (cada 2 segundos muestra los datos para que se vea un poco mejor)
+        k_sleep(K_MSEC(2000)); // 10 Hz (bajo consumo)
     }
 }
