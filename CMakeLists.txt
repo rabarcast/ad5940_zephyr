@@ -3,7 +3,19 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(proyectoSAC)
 
-target_sources(app PRIVATE src/main.c)
-target_sources(app PRIVATE scripts/drivers/BNO055.c)
+target_sources(app PRIVATE
+    src/main.c
 
-target_include_directories(app PRIVATE scripts/drivers)
+    # Drivers
+    scripts/drivers/BNO055.c
+    scripts/drivers/ble.c
+
+    # Utils
+    scripts/utils/madgwick_filter.c
+    scripts/utils/utils.c
+)
+
+target_include_directories(app PRIVATE
+    scripts/drivers
+    scripts/utils
+)
