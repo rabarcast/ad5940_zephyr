@@ -11,7 +11,7 @@ target_sources(app PRIVATE
     scripts/drivers/ble.c
 
     # Utils
-    scripts/utils/madgwick_filter.c
+    scripts/utils/fall_detection.c
     scripts/utils/utils.c
 )
 

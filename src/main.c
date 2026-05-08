@@ -7,10 +7,8 @@
 #include <string.h>
 
 #include "BNO055.h"
-#include "madgwick_filter.h"
+#include "fall_detection.h"
 #include "ble.h"
-
-#define RAD (3.14159265359f / 180.0f)
 
 #define I2C_NODE DT_NODELABEL(bno055)
 
@@ -53,9 +51,7 @@ int main(void)
         return 0;
     }
 
-    printk("I2C OK\n");
-
-    /* sensor */
+    /* SENSOR */
 
     if (bno055_init(&bno) != 0) {
 
@@ -66,76 +62,59 @@ int main(void)
 
     printk("BNO055 listo\n");
 
-    float ax = 0;
-    float ay = 0;
-    float az = 0;
+    /* FALL DETECTION */
 
-    float gx = 0;
-    float gy = 0;
-    float gz = 0;
+    FallDetection_Init();
 
-    float qw = 0;
-    float qx = 0;
-    float qy = 0;
-    float qz = 0;
+    /* VARIABLES */
 
-    Madgwick_Init();
-
-    int64_t last_time = k_uptime_get();
+    float ax, ay, az;
+    float gx, gy, gz;
+    float qw, qx, qy, qz;
 
     while (1) {
 
-        /* leer sensor */
+        /* LEER SENSOR */
 
-        bno055_read_accel(&bno, &ax, &ay, &az);
+        bno055_read_accel(&bno,
+                          &ax,
+                          &ay,
+                          &az);
 
-        bno055_read_gyro(&bno, &gx, &gy, &gz);
+        bno055_read_gyro(&bno,
+                         &gx,
+                         &gy,
+                         &gz);
 
-        bno055_read_quat(&bno, &qw, &qx, &qy, &qz);
+        bno055_read_quat(&bno,
+                         &qw,
+                         &qx,
+                         &qy,
+                         &qz);
 
-        /* deg/s -> rad/s */
+        /* DETECCIÓN DE CAÍDA */
 
-        gx *= RAD;
-        gy *= RAD;
-        gz *= RAD;
-
-        /* dt */
-
-        int64_t now = k_uptime_get();
-
-        float dt = (now - last_time) / 1000.0f;
-
-        last_time = now;
-
-        /* filtro */
-
-        Madgwick_Update(gx,
-                         gy,
-                         gz,
-                         ax,
-                         ay,
-                         az,
-                         dt);
-
-        /* caída */
-
-        if (FallDetection_Update(ax,
-                                 ay,
-                                 az,
-                                 gx,
-                                 gy,
-                                 gz,
-                                 now) == FALL_DETECTED) {
-
-            printk("CAIDA DETECTADA\n");
+        if (FallDetection_Update(
+                ax,
+                ay,
+                az,
+                gx,
+                gy,
+                gz,
+                qw,
+                qx,
+                qy,
+                qz,
+                k_uptime_get()) == FALL_DETECTED)
+        {
+            printk("=========== CAIDA DETECTADA ===========\n");
 
             uint8_t encrypted[4];
 
             encrypt_fall(encrypted);
 
-            int err = ble_send(encrypted, sizeof(encrypted));
-
-            printk("BLE SEND: %d\n", err);
+            ble_send(encrypted,
+                     sizeof(encrypted));
         }
 
         k_msleep(10);
