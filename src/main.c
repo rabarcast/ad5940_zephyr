@@ -18,20 +18,6 @@ static struct bno055_dev bno = {
     .i2c = I2C_DT_SPEC_GET(I2C_NODE),
 };
 
-/* ================= ENCRYPT ================= */
-
-static void encrypt_fall(uint8_t *out)
-{
-    uint8_t plain[] = "FALL";
-
-    uint8_t key = 0x5A;
-
-    for (int i = 0; i < 4; i++) {
-
-        out[i] = plain[i] ^ key;
-    }
-}
-
 /* ================= MAIN ================= */
 
 int main(void)
@@ -72,9 +58,11 @@ int main(void)
     float gx, gy, gz;
     float qw, qx, qy, qz;
 
+    char fall_msg[256];
+
     while (1) {
 
-        /* LEER SENSOR */
+        /* ================= LEER SENSOR ================= */
 
         bno055_read_accel(&bno,
                           &ax,
@@ -92,7 +80,7 @@ int main(void)
                          &qy,
                          &qz);
 
-        /* DETECCIÓN DE CAÍDA */
+        /* ================= DETECCIÓN ================= */
 
         if (FallDetection_Update(
                 ax,
@@ -107,14 +95,28 @@ int main(void)
                 qz,
                 k_uptime_get()) == FALL_DETECTED)
         {
-            printk("=========== CAIDA DETECTADA ===========\n");
+            printk("\n");
+            printk("====================================\n");
+            printk("======= CAIDA DETECTADA ============\n");
+            printk("====================================\n");
 
-            uint8_t encrypted[4];
+            /* construir mensaje */
 
-            encrypt_fall(encrypted);
+            FallDetection_BuildMessage(
+                fall_msg,
+                sizeof(fall_msg));
 
-            ble_send(encrypted,
-                     sizeof(encrypted));
+            /* mostrar */
+
+            printk("DATA: %s\n", fall_msg);
+
+            /* enviar BLE */
+
+            int err = ble_send(
+                (uint8_t *)fall_msg,
+                strlen(fall_msg));
+
+            printk("BLE SEND: %d\n", err);
         }
 
         k_msleep(10);

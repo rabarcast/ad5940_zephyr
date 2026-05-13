@@ -1,5 +1,9 @@
+/* fall_detection.c */
+
 #include "fall_detection.h"
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #define FREEFALL_THRESHOLD     5.0f
 #define IMPACT_THRESHOLD       25.0f
@@ -22,6 +26,12 @@ static uint32_t state_time;
 
 static float q_start[4];
 
+/* ================= FALL DATA ================= */
+
+static fall_data_t last_fall;
+
+/* ================= UTILS ================= */
+
 static float quaternion_angle(
     float *qa,
     float *qb)
@@ -39,10 +49,16 @@ static float quaternion_angle(
            * 57.2958f;
 }
 
+/* ================= INIT ================= */
+
 void FallDetection_Init(void)
 {
     state = STATE_IDLE;
+
+    memset(&last_fall, 0, sizeof(last_fall));
 }
+
+/* ================= UPDATE ================= */
 
 fall_result_t FallDetection_Update(
     float ax, float ay, float az,
@@ -105,6 +121,21 @@ fall_result_t FallDetection_Update(
                 {
                     state = STATE_STILLNESS;
                     state_time = time_ms;
+
+                    /* guardar datos */
+                    last_fall.acceleration = acc_mag;
+                    last_fall.gyroscope = gyro_mag;
+                    last_fall.angle = angle;
+
+                    last_fall.ax = ax;
+                    last_fall.ay = ay;
+                    last_fall.az = az;
+
+                    last_fall.gx = gx;
+                    last_fall.gy = gy;
+                    last_fall.gz = gz;
+
+                    last_fall.timestamp = time_ms;
                 }
                 else
                 {
@@ -125,6 +156,7 @@ fall_result_t FallDetection_Update(
                STILLNESS_TIME_MS)
             {
                 state = STATE_IDLE;
+
                 return FALL_DETECTED;
             }
 
@@ -132,4 +164,57 @@ fall_result_t FallDetection_Update(
     }
 
     return FALL_NONE;
+}
+
+/* ================= GET DATA ================= */
+
+void FallDetection_GetLastFall(
+    fall_data_t *data)
+{
+    memcpy(data,
+           &last_fall,
+           sizeof(fall_data_t));
+}
+
+/* ================= BUILD STRING ================= */
+
+void FallDetection_BuildMessage(
+    char *out,
+    size_t max_len)
+{
+    struct timespec ts;
+    struct tm tm_time;
+
+    /* obtener hora del sistema */
+    sys_clock_gettime(SYS_CLOCK_REALTIME, &ts);
+    gmtime_r(&ts.tv_sec, &tm_time);
+
+    /* formatear fecha */
+    char date_str[16];
+    char time_str[16];
+
+    snprintf(date_str, sizeof(date_str),
+             "%04d-%02d-%02d",
+             tm_time.tm_year + 1900,
+             tm_time.tm_mon + 1,
+             tm_time.tm_mday);
+
+    snprintf(time_str, sizeof(time_str),
+             "%02d:%02d:%02d",
+             tm_time.tm_hour,
+             tm_time.tm_min,
+             tm_time.tm_sec);
+
+    /* construir mensaje final */
+    snprintf(out,
+             max_len,
+             "FALL|DATE:%s|TIME:%s|ACC:%.2f|GYR:%.2f|ANG:%.2f|AX:%.2f|AY:%.2f|AZ:%.2f",
+             date_str,
+             time_str,
+             (double)last_fall.acceleration,
+             (double)last_fall.gyroscope,
+             (double)last_fall.angle,
+             (double)last_fall.ax,
+             (double)last_fall.ay,
+             (double)last_fall.az);
 }

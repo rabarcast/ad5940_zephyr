@@ -15,7 +15,7 @@ static bool notify_enabled = false;
 
 /* ================= BUFFERS ================= */
 
-static uint8_t notify_buf[32];
+static uint8_t notify_buf[256];
 static uint8_t rx_buf[64];
 
 /* ================= UUIDs ================= */
@@ -131,23 +131,46 @@ int ble_send(uint8_t *data, uint16_t len)
         return -EACCES;
     }
 
-    if (len > sizeof(notify_buf)) {
-        return -EINVAL;
+    uint16_t offset = 0;
+
+    while (offset < len) {
+
+        uint16_t chunk_len = len - offset;
+
+        /* BLE clásico seguro */
+        if (chunk_len > 20) {
+            chunk_len = 20;
+        }
+
+        memcpy(notify_buf,
+               data + offset,
+               chunk_len);
+
+        int err = bt_gatt_notify(
+            current_conn,
+            &fall_svc.attrs[1],
+            notify_buf,
+            chunk_len);
+
+        if (err) {
+            printk("Notify error: %d\n", err);
+            return err;
+        }
+
+        offset += chunk_len;
+
+        /* pequeño delay BLE */
+        k_msleep(10);
     }
 
-    memcpy(notify_buf, data, len);
-
-    return bt_gatt_notify(current_conn,
-                          &fall_svc.attrs[1],
-                          notify_buf,
-                          len);
+    return 0;
 }
 
 /* ================= TEST ================= */
 
 static int ble_send_test(void)
 {
-    char msg[] = "FALL";
+    char msg[] = "FALL|DATE:2026-05-13|TIME:14:32:51|ACC:31.22|GYR:5.12|ANG:82.11|AX:1.23|AY:-0.88|AZ:29.81";
 
     int err = ble_send((uint8_t *)msg, sizeof(msg) - 1);
 
