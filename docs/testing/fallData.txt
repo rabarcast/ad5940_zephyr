@@ -1,0 +1,254 @@
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:0.00|GYR:0.00|ANG:0.00|AX:0.00|AY:0.00|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:0.00|GYR:0.00|ANG:0.00|AX:0.00|AY:0.00|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:0.00|GYR:0.00|ANG:0.00|AX:0.00|AY:0.00|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:0.00|GYR:0.00|ANG:0.00|AX:0.00|AY:0.00|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:0.00|GYR:0.00|ANG:0.00|AX:0.00|AY:0.00|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:8.59|GYR:16.17|ANG:53.31|AX:1.81|AY:-6.93|AZ:4.76|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:8.59|GYR:16.17|ANG:53.31|AX:1.81|AY:-6.93|AZ:4.76|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:17.24|GYR:99.82|ANG:56.16|AX:-9.47|AY:-14.41|AZ:0.25|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:17.24|GYR:99.82|ANG:56.16|AX:-9.47|AY:-14.41|AZ:0.25|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:11.39|GYR:16.84|ANG:71.84|AX:-6.00|AY:-9.45|AZ:2.10|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:11.39|GYR:16.84|ANG:71.84|AX:-6.00|AY:-9.45|AZ:2.10|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:15.39|GYR:29.80|ANG:48.91|AX:-4.73|AY:-14.65|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:15.39|GYR:29.80|ANG:48.91|AX:-4.73|AY:-14.65|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:15.39|GYR:29.80|ANG:48.91|AX:-4.73|AY:-14.65|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:42.64|GYR:509.59|ANG:53.30|AX:-38.47|AY:-9.43|AZ:15.77|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:42.64|GYR:509.59|ANG:53.30|AX:-38.47|AY:-9.43|AZ:15.77|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:44.06|GYR:1164.55|ANG:56.95|AX:0.22|AY:-21.72|AZ:-38.34|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:44.06|GYR:1164.55|ANG:56.95|AX:0.22|AY:-21.72|AZ:-38.34|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:44.06|GYR:1164.55|ANG:56.95|AX:0.22|AY:-21.72|AZ:-38.34|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:43.12|GYR:723.46|ANG:58.93|AX:19.46|AY:38.47|AZ:0.07|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:10.39|GYR:63.49|ANG:79.04|AX:-4.58|AY:-9.33|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:10.39|GYR:63.49|ANG:79.04|AX:-4.58|AY:-9.33|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:9.38|GYR:58.18|ANG:79.07|AX:0.07|AY:-9.38|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:9.38|GYR:58.18|ANG:79.07|AX:0.07|AY:-9.38|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:8.24|GYR:14.69|ANG:59.19|AX:2.10|AY:-6.86|AZ:4.05|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:8.24|GYR:14.69|ANG:59.19|AX:2.10|AY:-6.86|AZ:4.05|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:11.58|GYR:22.31|ANG:57.17|AX:6.17|AY:-9.47|AZ:2.55|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:11.58|GYR:22.31|ANG:57.17|AX:6.17|AY:-9.47|AZ:2.55|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:9.29|GYR:106.23|ANG:61.68|AX:-2.67|AY:-8.90|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:9.29|GYR:106.23|ANG:61.68|AX:-2.67|AY:-8.90|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:9.29|GYR:106.23|ANG:61.68|AX:-2.67|AY:-8.90|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:9.29|GYR:106.23|ANG:61.68|AX:-2.67|AY:-8.90|AZ:0.15|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:9.45|GYR:41.25|ANG:55.67|AX:-4.80|AY:-7.14|AZ:3.91|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:9.45|GYR:41.25|ANG:55.67|AX:-4.80|AY:-7.14|AZ:3.91|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:5.33|GYR:53.98|ANG:125.47|AX:-3.28|AY:4.21|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:5.33|GYR:53.98|ANG:125.47|AX:-3.28|AY:4.21|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:5.33|GYR:53.98|ANG:125.47|AX:-3.28|AY:4.21|AZ:0.00|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_POSSIBLE|DATE:(null)|TIME:(null)|ACC:6.52|GYR:10.42|ANG:143.85|AX:-4.78|AY:3.64|AZ:2.53|END
+
+====================================
+======= CAIDA DETECTADA ============
+====================================
+DATA: FALL_IMPACT_DETECTED|DATE:(null)|TIME:(null)|ACC:6.52|GYR:10.42|ANG:143.85|AX:-4.78|AY:3.64|AZ:2.53|END
