@@ -5,6 +5,6 @@
 
 void ble_init(void);
 int ble_send(uint8_t *data, uint16_t len);
-void ble_test_fall(void);
+//void ble_test_fall(void);
 
 #endif

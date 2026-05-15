@@ -52,7 +52,7 @@ static const struct bt_data sd[] = {
 /* ================= FORWARD DECL ================= */
 
 static void start_advertising(void);
-static int ble_send_test(void);
+//static int ble_send_test(void);
 
 /* ================= CCC ================= */
 
@@ -63,10 +63,6 @@ static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
     notify_enabled = (value == BT_GATT_CCC_NOTIFY);
 
     printk("Notify: %s\n", notify_enabled ? "ON" : "OFF");
-
-    if (notify_enabled) {
-        ble_send_test();
-    }
 }
 
 /* ================= WRITE CALLBACK (GPS FROM MOBILE) ================= */
@@ -168,26 +164,28 @@ int ble_send(uint8_t *data, uint16_t len)
 
 /* ================= TEST ================= */
 
-static int ble_send_test(void)
-{
-    char msg[] = "FALL|DATE:2026-05-13|TIME:14:32:51|ACC:31.22|GYR:5.12|ANG:82.11|AX:1.23|AY:-0.88|AZ:29.81";
+// static int ble_send_test(void)
+// {
+//     char msg[] = "FALL|DATE:2026-05-13|TIME:14:32:51|ACC:31.22|GYR:5.12|ANG:82.11|AX:1.23|AY:-0.88|AZ:29.81|END\n";
 
-    int err = ble_send((uint8_t *)msg, sizeof(msg) - 1);
+//     int err = ble_send((uint8_t *)msg, sizeof(msg) - 1);
 
-    printk("TEST FALL SEND: %d\n", err);
+//     printk("TEST FALL SEND: %d\n", err);
+//     printk("%s", msg);
 
-    return err;
-}
+//     return err;
+// }
 
-void ble_test_fall(void)
-{
-    ble_send_test();
-}
+// void ble_test_fall(void)
+// {
+//     ble_send_test();
+// }
 
 /* ================= CONNECTION CALLBACKS ================= */
 
 static void connected(struct bt_conn *conn, uint8_t err)
 {
+    notify_enabled = false;
     if (err) {
         printk("BLE connect error: %d\n", err);
         return;

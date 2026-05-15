@@ -8,9 +8,19 @@
 #include <zephyr/sys/timeutil.h>
 #include <time.h>
 
+#define FREEFALL_THRESHOLD     7.5f
+#define IMPACT_THRESHOLD       20.0f
+#define STILLNESS_GYRO         15.0f
+#define ANGLE_THRESHOLD        60.0f
+
+#define IMPACT_WINDOW_MS       1000
+#define STILLNESS_TIME_MS      2000
+
 typedef enum {
     FALL_NONE = 0,
-    FALL_DETECTED
+    FALL_DETECTED,
+    FALL_IMPACT_DETECTED,
+    FALL_POSSIBLE
 } fall_result_t;
 
 /* ================= FALL DATA ================= */
@@ -47,6 +57,7 @@ void FallDetection_GetLastFall(
     fall_data_t *data);
 
 void FallDetection_BuildMessage(
+    fall_result_t,
     char *out,
     size_t max_len);
 

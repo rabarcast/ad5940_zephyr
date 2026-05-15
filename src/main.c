@@ -59,6 +59,7 @@ int main(void)
     float qw, qx, qy, qz;
 
     char fall_msg[256];
+    fall_result_t fall;
 
     while (1) {
 
@@ -81,19 +82,12 @@ int main(void)
                          &qz);
 
         /* ================= DETECCIÓN ================= */
-
-        if (FallDetection_Update(
-                ax,
-                ay,
-                az,
-                gx,
-                gy,
-                gz,
-                qw,
-                qx,
-                qy,
-                qz,
-                k_uptime_get()) == FALL_DETECTED)
+        fall = FallDetection_Update(ax, ay, az, gx, gy, gz, qw, qx, qy, qz, k_uptime_get());
+        // printk("AX: %.2f| AY: %.2f| AZ: %.2f\n", ax, ay, az);
+        // printk("GX: %.2f| GY: %.2f| GZ: %.2f\n", gx, gy, gz);
+        // printk("QW: %.2f| QX: %.2f| QY: %.2f| QZ: %.2f\n", qw, qx, qy, qz);
+        // k_msleep(500);
+        if (fall != FALL_NONE)
         {
             printk("\n");
             printk("====================================\n");
@@ -103,6 +97,7 @@ int main(void)
             /* construir mensaje */
 
             FallDetection_BuildMessage(
+                fall,
                 fall_msg,
                 sizeof(fall_msg));
 
